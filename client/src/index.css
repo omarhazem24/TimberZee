@@ -1,0 +1,150 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+  --primary: #000000;
+  --secondary: #ffffff;
+  --accent: #e5e5e5;
+  --text-main: #000000;
+  --text-light: #555555;
+  --grey-highlight: #888888;
+  --font-heading: 'Oswald', sans-serif;
+  --font-body: 'Roboto', sans-serif;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--secondary);
+  color: var(--text-main);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+/* --- Navigation --- */
+.navbar {
+    background: white !important;
+    border-bottom: 1px solid #eee;
+    padding: 1rem 2rem;
+    position: relative;
+}
+
+.navbar-brand {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.nav-link {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 1px;
+    color: black !important;
+}
+
+@media (min-width: 992px) {
+    .centered-search {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        margin: 0 !important;
+    }
+}
+
+/* --- Hero Section --- */
+.hero-banner {
+    background-color: #f4f4f4;
+    padding: 80px 0;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.hero-title {
+    font-size: 4rem;
+    margin-bottom: 10px;
+}
+
+.hero-subtitle {
+    font-family: var(--font-body);
+    color: #666;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+/* --- Product Card (Streetwear Style) --- */
+.product-card {
+    border: none;
+    background: transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+.product-card img {
+    background-color: #f9f9f9; /* Light gray bg for product images */
+    padding: 20px;
+    margin-bottom: 15px;
+    width: 100%;
+    object-fit: contain;
+    aspect-ratio: 1 / 1;
+}
+
+.product-info {
+    text-align: center;
+}
+
+.product-title {
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+.product-price {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+/* --- Buttons --- */
+.btn-black {
+    background-color: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 0;
+    padding: 10px 30px;
+    text-transform: uppercase;
+    font-family: var(--font-heading);
+    font-weight: 500;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+}
+
+.btn-black:hover {
+    background-color: white;
+    color: black;
+}
+
+/* --- Card Hover Animation --- */
+.product-card-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card-hover:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23) !important;
+}
+

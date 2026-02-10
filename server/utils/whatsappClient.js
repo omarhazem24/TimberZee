@@ -39,6 +39,14 @@ const initializeWhatsApp = () => {
         console.log('NOTE: You only need to do this ONCE. The session will be saved locally.');
         console.log('------------------------------------------------');
         qrcode.generate(qr, { small: true });
+        console.log('------------------------------------------------');
+        console.log('IF THE QR CODE ABOVE IS UNREADABLE / DISTORTED:');
+        console.log('1. Copy the long text string below.');
+        console.log('2. Go to https://www.the-qrcode-generator.com/ (or any "Text" QR generator).');
+        console.log('3. Paste the string to generate a scannable code.');
+        console.log('RAW QR STRING:');
+        console.log(qr);
+        console.log('------------------------------------------------');
     });
 
     client.on('ready', () => {

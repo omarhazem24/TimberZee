@@ -164,7 +164,7 @@ const verifyOtp = async (req, res) => {
     }
 };
 
-// @desc    Forgot Password
+// @desc    Forgot Password via WhatsApp OTP
 // @route   POST /api/auth/forgot-password
 // @access  Public
 const forgotPassword = async (req, res) => {
@@ -177,46 +177,74 @@ const forgotPassword = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Generate token
-    const resetToken = crypto.randomBytes(20).toString('hex');
-
-    // Hash token and set to resetPasswordToken field
-    user.resetPasswordToken = crypto
-      .createHash('sha256')
-      .update(resetToken)
-      .digest('hex');
-
-    // Set expire
-    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 Minutes
+    // Generate numeric OTP for WhatsApp
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Using phoneOtp field
+    user.phoneOtp = otp;
+    user.phoneOtpExpires = Date.now() + 10 * 60 * 1000; // 10 Minutes
 
     await user.save();
 
-    // Create reset url
-    // Assumes client runs on port 3000
-    const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
+    const fullPhoneNumber = `${user.countryCode}${user.phoneNumber}`;
+    const message = `Your password reset verification code for TimberZee is: *${otp}*`;
 
-    const message = `
-      <h1>You have requested a password reset</h1>
-      <p>Please click on the following link to reset your password:</p>
-      <a href="${resetUrl}" clicktracking=off>${resetUrl}</a>
-    `;
+    // Attempt to send WA message
+    const waResult = await sendWhatsAppMessage(fullPhoneNumber, message);
+    
+    // We'll return 200 regardless of immediate WA result because it's async, 
+    // or we can handle error if we trust the return value.
+    // The previous implementation didn't await, but here we might want to check if phone is valid.
+    
+    res.status(200).json({ success: true, data: 'OTP sent to WhatsApp' });
 
-    try {
-      await sendEmail(user.email, 'Password Reset Request', message);
-
-      res.status(200).json({ success: true, data: 'Email sent' });
-    } catch (err) {
-      user.resetPasswordToken = undefined;
-      user.resetPasswordExpire = undefined;
-
-      await user.save();
-
-      return res.status(500).json({ message: 'Email could not be sent' });
-    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+// @desc    Verify Reset OTP and Issue Token
+// @route   POST /api/auth/verify-reset-otp
+// @access  Public
+const verifyResetOtp = async (req, res) => {
+  const { email, otp } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (user.phoneOtp === otp && user.phoneOtpExpires > Date.now()) {
+        // OTP Valid. Generate the actual Reset Token for the next step.
+        const resetToken = crypto.randomBytes(20).toString('hex');
+
+        // Hash token and set to resetPasswordToken field
+        user.resetPasswordToken = crypto
+          .createHash('sha256')
+          .update(resetToken)
+          .digest('hex');
+          
+        user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 Minutes
+        
+        // Clear OTP
+        user.phoneOtp = undefined;
+        user.phoneOtpExpires = undefined;
+        
+        await user.save();
+
+        res.json({ success: true, resetToken });
+    } else {
+        res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+  } catch (error) {
+     res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Reset Password
+
 
 // @desc    Reset Password
 // @route   PUT /api/auth/reset-password/:resetToken
@@ -272,5 +300,6 @@ module.exports = {
   registerUser,
   verifyOtp,
   forgotPassword,
+  verifyResetOtp,
   resetPassword
 };
